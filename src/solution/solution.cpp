@@ -6,6 +6,8 @@
 #include <thread>
 
 int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
+
+
   // Short example you can remove it
   std::cout << (preempt ? "Preempt" : "Queue") << '\n';
   auto motor1 = tester->get_motor_1();
@@ -25,4 +27,7 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
   std::this_thread::sleep_for(std::chrono::milliseconds(250));
   //
   return 0;
+
+
+
 }
