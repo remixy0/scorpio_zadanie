@@ -8,7 +8,7 @@
 int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
 
 
-
+  Point current_target;
   // Short example you can remove it
   std::cout << (preempt ? "Preempt" : "Queue") << '\n';
 
@@ -16,11 +16,16 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
   auto motor2 = tester->get_motor_2();
   auto commands = tester->get_commands();
 
-  commands->add_data_callback([](const Point& target) {
+  commands->add_data_callback([&current_target](const Point& target) {
+    current_target = target;
     std::cout << "Cel: x=" << target.x
               << " y=" << target.y
               << " z=" << target.z << std::endl;
   });
+
+  std::cout << "X:" << current_target.x << "\n";
+  std::cout << "Y:" << current_target.y << "\n";
+  std::cout << "Z:" << current_target.z << "\n";
 
   motor1->add_data_callback([](const uint16_t& data) {
     std::cout << "Motor 1 data: " << static_cast<int>(data) << "\n";
