@@ -67,9 +67,10 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
 
 
     while (true) {
+
     motor1->send_data(wzor(encoder_value,kat_1));
     motor2->send_data(wzor(encoder_value_2,kat_2));
-    this_thread::sleep_for(chrono::milliseconds(100));
+
 }
 
 
