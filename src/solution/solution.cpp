@@ -14,8 +14,12 @@ float wzor(float enkoder,float kat) {
 
     float roznica = abs(enkoder - kat);
     float speed = 127 * (1 - pow(E,-roznica/8));
-
-   return speed;
+    if (enkoder < kat) {
+        mnoznik = 1;
+    }else {
+        mnoznik =  -1;
+    }
+    return speed * mnoznik;
 }
 
 
