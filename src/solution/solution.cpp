@@ -9,7 +9,14 @@ constexpr long double PI = 3.141592653589793238462643L;
 constexpr long double E = 2.718281828459045235360287L;
 
 
+float wzor(float enkoder,float kat) {
+    int mnoznik;
 
+    float roznica = abs(enkoder - kat);
+    float speed = 127 * (1 - pow(E,-roznica/8));
+
+   return speed;
+}
 
 
 
