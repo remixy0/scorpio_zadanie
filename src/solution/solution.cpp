@@ -13,7 +13,8 @@ float wzor(float enkoder,float kat) {
     int mnoznik;
 
     float roznica = abs(enkoder - kat);
-    float speed = 127 * (1 - pow(E,-roznica/8));
+    float speed = 127 * (1 - pow(E,-roznica/20));
+
     if (enkoder < kat) {
         mnoznik = 1;
     }else {
@@ -52,10 +53,8 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
       cout << "KAT 2:" << kat_2 << "\n";
       cout << "PROMIEN:" << promien << "\n";
       });
-  this_thread::sleep_for(chrono::milliseconds(2000));
 
-
-  motor1->add_data_callback([&encoder_value](const uint16_t& value){
+    motor1->add_data_callback([&encoder_value](const uint16_t& value){
       encoder_value = value;
       cout << "Enkoder 1: " << encoder_value << endl;
   });
@@ -67,10 +66,10 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
 
 
     while (true) {
-
     motor1->send_data(wzor(encoder_value,kat_1));
+    cout << "speed: " << wzor(encoder_value,kat_1) << endl;
     motor2->send_data(wzor(encoder_value_2,kat_2));
-
+    this_thread::sleep_for(chrono::milliseconds(100));
 }
 
 
