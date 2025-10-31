@@ -3,6 +3,7 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
+#include <list>
 
 using namespace std;
 constexpr long double PI = 3.141592653589793238462643L;
@@ -23,14 +24,14 @@ float wzor(float enkoder,float kat) {
     return speed * mnoznik;
 }
 
-class CurrentPoint {
+class Points {
 private:
     float promien;
 
 public:
     int x,y,z;
 
-    CurrentPoint(int x, int y, int z) {
+    Points(int x, int y, int z) {
         this->x = x;
         this->y = y;
         this->z = z;
@@ -54,18 +55,19 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
 
     uint16_t encoder_value_X = 0;
     uint16_t encoder_value_Y = 0;
+    std::list<Points> points;
 
   auto motor1 = tester->get_motor_1();
   auto motor2 = tester->get_motor_2();
   auto commands = tester->get_commands();
 
-  commands->add_data_callback([](const Point& target) {
-    CurrentPoint current_point = CurrentPoint(target.x, target.y, target.z);
-
+  commands->add_data_callback([&points](const Point& target) {
+      points.emplace_back(target.x,target.y,target.z);
       cout << "Cel: x=" << target.x
               << " y=" << target.y
               << " z=" << target.z << endl;
-      });
+
+    });
 
     motor1->add_data_callback([&encoder_value_X](const uint16_t& value){
       encoder_value_X = value;
@@ -78,10 +80,13 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
  });
 
 
+
+    for (const auto& p : points)
+        p.print();
+
     while (true) {
-    motor1->send_data(wzor(encoder_value,kat_1));
-    cout << "speed: " << wzor(encoder_value,kat_1) << endl;
-    motor2->send_data(wzor(encoder_value_2,kat_2));
+    motor1->send_data(wzor(encoder_value_X,));
+    motor2->send_data(wzor(encoder_value_Y,));
     this_thread::sleep_for(chrono::milliseconds(100));
 }
 
