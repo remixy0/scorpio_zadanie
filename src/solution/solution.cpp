@@ -58,7 +58,7 @@ float wzor(float enkoder,float kat) {
 void ustawienieSilnikow(Points& p, uint16_t& encoder_value_X, uint16_t& encoder_value_Y,std::shared_ptr<backend_interface::Tester> tester) {
     auto motor1 = tester->get_motor_1();
     auto motor2 = tester->get_motor_2();
-
+    this_thread::sleep_for(chrono::milliseconds(10));
     cout << "Cel: " << p.x << " " << p.y << " " << p.z << endl;
 
     while (abs(p.katX() - encoder_value_X) > (4095 * procent_bledu / 100) || abs(p.katY() - encoder_value_Y) > (4095 * procent_bledu / 100)) {
@@ -95,6 +95,11 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
           cout << "zmiana celu na: x=" << target.x
                 << " y=" << target.y
                 << " z=" << target.z << endl;
+          }else {
+              cout << "dodano cel do kolejki: x=" << target.x
+                              << " y=" << target.y
+                              << " z=" << target.z << endl;
+
           }
   });
 
@@ -124,11 +129,7 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
     if (!preempt) {
         while (true){
             for (auto& p : points) {
-
-                if (!p.done) {
-                    cout <<"DOCELOWY X:" <<p.katX() << "    Y:" << p.katY() << endl;
-                    ustawienieSilnikow(p,encoder_value_X,encoder_value_Y,tester);
-                }
+                if (!p.done) ustawienieSilnikow(p,encoder_value_X,encoder_value_Y,tester);
             }
         }
     }
