@@ -105,12 +105,12 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
 
     motor1->add_data_callback([&encoder_value_X](const uint16_t& value){
       encoder_value_X = value;
-      // cout << "Enkoder 1: " << encoder_value_X << endl;
+      // cout << "Enkoder X: " << encoder_value_X << endl;
   });
 
   motor2->add_data_callback([&encoder_value_Y](const uint16_t& value){
      encoder_value_Y = value;
-     // cout << "Enkoder 2: " << encoder_value_Y << endl;
+     // cout << "Enkoder Y: " << encoder_value_Y << endl;
  });
 
 
