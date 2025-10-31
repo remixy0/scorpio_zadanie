@@ -9,7 +9,7 @@ using namespace std;
 constexpr long double PI = 3.141592653589793238462643L;
 constexpr long double E = 2.718281828459045235360287L;
 
-double procent_bledu = 1;
+double procent_bledu = 0.2;
 
 
 class Points {
@@ -81,14 +81,16 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
     uint16_t encoder_value_Y = 0;
     std::list<Points> points;
     Points current_point = Points(0,0,0);
+    bool didPrint = false;
 
   auto motor1 = tester->get_motor_1();
   auto motor2 = tester->get_motor_2();
   auto commands = tester->get_commands();
 
-  commands->add_data_callback([&points, &current_point, &preempt](const Point& target) {
+  commands->add_data_callback([&points, &current_point, &preempt,&didPrint](const Point& target) {
       points.emplace_back(target.x,target.y,target.z);
       current_point = Points(target.x,target.y,target.z);
+      didPrint = false;
       if (preempt) {
           cout << "zmiana celu na: x=" << target.x
                 << " y=" << target.y
@@ -110,8 +112,9 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
 
     if (preempt) {
         while (true){
-            if (abs(current_point.katX() - encoder_value_X) < (4095 * procent_bledu / 100) || abs(current_point.katY() - encoder_value_Y) < (4095 * procent_bledu / 100)) {
+            if ((abs(current_point.katX() - encoder_value_X) < (4095 * procent_bledu / 100) && abs(current_point.katY() - encoder_value_Y) < (4095 * procent_bledu / 100)) && !didPrint) {
                 cout << "Osiagnieto: " << current_point.x << " " << current_point.y << " " << current_point.z << endl;
+                didPrint = true;
             }
             motor1->send_data(wzor(encoder_value_X, current_point.katX()));
             motor2->send_data(wzor(encoder_value_Y, current_point.katY()));
@@ -121,7 +124,11 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
     if (!preempt) {
         while (true){
             for (auto& p : points) {
-                if (!p.done) ustawienieSilnikow(p,encoder_value_X,encoder_value_Y,tester);
+
+                if (!p.done) {
+                    cout <<"DOCELOWY X:" <<p.katX() << "    Y:" << p.katY() << endl;
+                    ustawienieSilnikow(p,encoder_value_X,encoder_value_Y,tester);
+                }
             }
         }
     }
