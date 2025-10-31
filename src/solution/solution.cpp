@@ -40,7 +40,6 @@ public:
 };
 
 
-
 float speedFormula(float encoder,float angle) {
     int multiplier;
 
@@ -54,6 +53,7 @@ float speedFormula(float encoder,float angle) {
     }
     return speed * multiplier;
 }
+
 
 void setMotors(Points& p, uint16_t& encoder_value_X, uint16_t& encoder_value_Y,std::shared_ptr<backend_interface::Tester> tester) {
     auto motor1 = tester->get_motor_1();
@@ -70,9 +70,6 @@ void setMotors(Points& p, uint16_t& encoder_value_X, uint16_t& encoder_value_Y,s
 }
 
 
-
-
-
 int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
 
     cout << (preempt ? "Preempt" : "Queue") << '\n';
@@ -83,34 +80,34 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
     Points current_point = Points(0,0,0);
     bool didPrint = false;
 
-  auto motor1 = tester->get_motor_1();
-  auto motor2 = tester->get_motor_2();
-  auto commands = tester->get_commands();
+    auto motor1 = tester->get_motor_1();
+    auto motor2 = tester->get_motor_2();
+    auto commands = tester->get_commands();
 
-  commands->add_data_callback([&points, &current_point, &preempt,&didPrint](const Point& target) {
-      points.emplace_back(target.x,target.y,target.z);
-      current_point = Points(target.x,target.y,target.z);
-      didPrint = false;
-      if (preempt) {
+    commands->add_data_callback([&points, &current_point, &preempt,&didPrint](const Point& target) {
+        points.emplace_back(target.x,target.y,target.z);
+        current_point = Points(target.x,target.y,target.z);
+        didPrint = false;
+        if (preempt) {
            cout << "changing target to: x=" << target.x
                 << " y=" << target.y
                 << " z=" << target.z << endl;
-       } else {
+        } else {
            cout << "added target to queue: x=" << target.x
                 << " y=" << target.y
                 << " z=" << target.z << endl;
-       }
-  });
+        }
+    });
 
     motor1->add_data_callback([&encoder_value_X](const uint16_t& value){
       encoder_value_X = value;
       // cout << "Encoder X: " << encoder_value_X << endl;
-  });
+    });
 
   motor2->add_data_callback([&encoder_value_Y](const uint16_t& value){
      encoder_value_Y = value;
      // cout << "Encoder Y: " << encoder_value_Y << endl;
- });
+    });
 
 
 
@@ -122,20 +119,16 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
             }
             motor1->send_data(speedFormula(encoder_value_X, current_point.angleX()));
             motor2->send_data(speedFormula(encoder_value_Y, current_point.angleY()));
-        }
-    }
+    }}
+
 
     if (!preempt) {
         while (true){
             for (auto& p : points) {
                 if (!p.done) setMotors(p,encoder_value_X,encoder_value_Y,tester);
-            }
-        }
-    }
+    }}}
+
 
 
     return 0;
-
-
-
 }
