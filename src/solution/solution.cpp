@@ -36,22 +36,14 @@ public:
     void markDone(){
         done = true;
     }
-
 };
 
 
-float speedFormula(float encoder,float angle) {
-    int multiplier;
-
+int8_t speedFormula(float encoder, float angle) {
     float difference = abs(encoder - angle);
     float speed = 127 * (1 - pow(E,-difference/20));
-
-    if (encoder < angle) {
-        multiplier = 1;
-    }else {
-        multiplier =  -1;
-    }
-    return speed * multiplier;
+    int multiplier = (encoder < angle) ? 1 : -1;
+    return static_cast<int8_t>(speed * multiplier);
 }
 
 
@@ -109,26 +101,19 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
      // cout << "Encoder Y: " << encoder_value_Y << endl;
     });
 
-
-
-    if (preempt) {
-        while (true){
+        while (preempt){
             if ((abs(current_point.angleX() - encoder_value_X) < (4095 * errorPercent / 100) && abs(current_point.angleY() - encoder_value_Y) < (4095 * errorPercent / 100)) && !didPrint) {
                 cout << "Reached: " << current_point.x << " " << current_point.y << " " << current_point.z << endl;
                 didPrint = true;
             }
             motor1->send_data(speedFormula(encoder_value_X, current_point.angleX()));
             motor2->send_data(speedFormula(encoder_value_Y, current_point.angleY()));
-    }}
+        }
 
-
-    if (!preempt) {
-        while (true){
+        while (!preempt){
             for (auto& p : points) {
                 if (!p.done) setMotors(p,encoder_value_X,encoder_value_Y,tester);
-    }}}
-
-
+        }}
 
     return 0;
 }
