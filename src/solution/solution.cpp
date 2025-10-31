@@ -112,5 +112,6 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
                 if (!p.done) setMotors(p,encoder_value_X,encoder_value_Y,tester);
         }}
 
+
     return 0;
 }
