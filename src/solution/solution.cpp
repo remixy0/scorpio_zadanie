@@ -23,45 +23,58 @@ float wzor(float enkoder,float kat) {
     return speed * mnoznik;
 }
 
+class CurrentPoint {
+private:
+    float promien;
+
+public:
+    int x,y,z;
+
+    CurrentPoint(int x, int y, int z) {
+        this->x = x;
+        this->y = y;
+        this->z = z;
+    }
+
+    float katX(){
+        return atan((y/x))/ (2*PI) * 4095;
+    }
+
+    float katY(){
+        promien = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+        return acos(z/promien) / (2*PI) * 4095;
+    }
+};
+
 
 
 int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
 
     cout << (preempt ? "Preempt" : "Queue") << '\n';
 
-    Point current_target;
-    uint16_t encoder_value = 0;
-    uint16_t encoder_value_2 = 0;
-    float kat_1;
-    float kat_2;
-    float promien;
+    uint16_t encoder_value_X = 0;
+    uint16_t encoder_value_Y = 0;
 
   auto motor1 = tester->get_motor_1();
   auto motor2 = tester->get_motor_2();
   auto commands = tester->get_commands();
 
-  commands->add_data_callback([&current_target,&kat_1,&kat_2,&promien](const Point& target) {
-    current_target = target;
-    kat_1 = atan((current_target.y/current_target.x))/ (2*PI) * 4095;
-    promien = sqrt(pow(current_target.x, 2) + pow(current_target.y, 2) + pow(current_target.z, 2));
-    kat_2 = acos(current_target.z/promien) / (2*PI) * 4095;
+  commands->add_data_callback([](const Point& target) {
+    CurrentPoint current_point = CurrentPoint(target.x, target.y, target.z);
+
       cout << "Cel: x=" << target.x
               << " y=" << target.y
               << " z=" << target.z << endl;
-
-      cout << "KAT 1:" << kat_1 << "\n";
-      cout << "KAT 2:" << kat_2 << "\n";
-      cout << "PROMIEN:" << promien << "\n";
       });
 
-    motor1->add_data_callback([&encoder_value](const uint16_t& value){
-      encoder_value = value;
-      cout << "Enkoder 1: " << encoder_value << endl;
+    motor1->add_data_callback([&encoder_value_X](const uint16_t& value){
+      encoder_value_X = value;
+      cout << "Enkoder 1: " << encoder_value_X << endl;
   });
 
-  motor2->add_data_callback([&encoder_value_2](const uint16_t& value){
-     encoder_value_2 = value;
-     cout << "Enkoder 2: " << encoder_value_2 << endl;
+  motor2->add_data_callback([&encoder_value_Y](const uint16_t& value){
+     encoder_value_Y = value;
+     cout << "Enkoder 2: " << encoder_value_Y << endl;
  });
 
 
