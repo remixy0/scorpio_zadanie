@@ -8,9 +8,7 @@
 using namespace std;
 constexpr long double PI = 3.141592653589793238462643L;
 constexpr long double E = 2.718281828459045235360287L;
-
 double errorPercent = 0.2;
-
 
 class Points {
 public:
