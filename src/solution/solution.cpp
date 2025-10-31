@@ -23,7 +23,6 @@ public:
 
     float angleX() const {
         return atan2(y,x)/ (2*PI) * 4095;
-
     }
 
     float angleY() const {
