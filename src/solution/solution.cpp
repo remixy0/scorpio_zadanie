@@ -23,13 +23,20 @@ public:
     }
 
     float angleX() const {
-        float angle = ((atan2(y,x)/ (2*PI) * 4095)>0) ? atan2(y,x)/ (2*PI) * 4095 : 4095 + (atan2(y,x)/ (2*PI) * 4095);
+        float angle = (atan2(y,x)/ (2*PI) * 4095) > 0 ? (atan2(y,x)/ (2*PI) * 4095) : 4096 + (atan2(y,x)/ (2*PI) * 4095) ;
         return angle;
     }
 
     float angleY() const {
+        if (z==0) return 0;
         float radius = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-        float angle = (z == 0) ? 0 : abs(((acos(z/radius)) / PI * 4095 - 1024));
+        float angle = (acos(z/radius) / PI * 2048 + 1024);
+        if (angle > 1024 && angle < 2048) {
+            angle = 1024 - abs(angle - 1024);
+        }
+        if (angle > 2048 && angle < 3072) {
+            angle = 3072 + abs(angle - 3072);
+        }
         return angle;
     }
 

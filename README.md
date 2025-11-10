@@ -14,6 +14,8 @@ Zacząłem od przekształcenia układu współrzędnych na układ sferyczny, pon
 
 <br>
 
+Aby współrzędne zgadzały sie z tymi, które używamy przy sterowaniu silnikiem, musiałem przeskalować kąty, ze wzgledu na wykorzytywanie nie pełnego obrotu w osi Y. W osi X, w zależności od tego, czy kąt jest dodatni, czy ujemny, ustawiam odpowiedni kąt. Np. dla kąta -1500 ustawiam kąt 2596  (bo 4095 + -1500).
+
 
 <span style="font-size:22px;">**Klasa Points**
 
@@ -24,7 +26,7 @@ Stworzyłem klasę Points, która pozwala na tworzenie obiektów reprezentujący
 
 <span style="font-size:22px;">**Ustawianie prędkości silników**
 
-Do ustawiania prędkości silników wykorzystuję funkcję speedFormula, która określa zarówno kierunek, jak i wartość prędkości. Prędkość obliczana jest na podstawie funkcji matematycznej:
+Do ustawiania prędkości silników wykorzystuję funkcję speedFormula, która określa zarówno kierunek (szukamy najkrótszej drogi do docelowego punktu, oraz sprawdzamy kierunek, w którym powinien obracać się silnik, aby dotrzeć tam najszyciej), jak i wartość prędkości. Prędkość obliczana jest na podstawie funkcji matematycznej:
 
 <br>
 
