@@ -1,6 +1,6 @@
 
 
-<span style="font-size:22px;">**Zamiana układu współrzędnych na sferyczny**
+<span style="font-size:26px;">**Zamiana układu współrzędnych na sferyczny**
 
 Zacząłem od przekształcenia układu współrzędnych na układ sferyczny, ponieważ omawialiśmy to na wykładzie z fizyki. Zauważyłem przy tym podobieństwo między współrzędnymi sferycznymi a dwoma kątami, które wymagane są do sterowania silnikami. W tym celu wykorzystałem następujące wzory:
 
@@ -17,20 +17,20 @@ Zacząłem od przekształcenia układu współrzędnych na układ sferyczny, pon
 Aby współrzędne zgadzały sie z tymi, które używamy przy sterowaniu silnikiem, musiałem przeskalować kąty, ze wzgledu na wykorzytywanie nie pełnego obrotu w osi Y. W osi X, w zależności od tego, czy kąt jest dodatni, czy ujemny, ustawiam odpowiedni kąt. Np. dla kąta -1500 ustawiam kąt 2596  (bo 4096 + -1500).
 
 
-<span style="font-size:22px;">**Klasa Points**
+<span style="font-size:26px;">**Klasa Points**
 
 Stworzyłem klasę Points, która pozwala na tworzenie obiektów reprezentujących punkty i zarządzanie nimi w programie. Klasa ta zawiera metody umożliwiające obliczenie wymaganych kątów do ustawienia silników w osiach X i Y. W klasie przechowuje się również informacja o optymalnym kierunku obrotu osi X oraz Y, dzięki czemu informacja jest łatwo dostepna, w każdym miejscu programu.
 
 
 <br>
 
-<span style="font-size:22px;">**Ustawianie prędkości silników**
+<span style="font-size:26px;">**Ustawianie prędkości silników**
 
 Do ustawiania prędkości silników wykorzystuję funkcję speedFormula, która określa zarówno kierunek (szukamy najkrótszej drogi do docelowego punktu, oraz sprawdzamy kierunek, w którym powinien obracać się silnik, aby dotrzeć tam najszyciej), jak i wartość prędkości. Prędkość obliczana jest na podstawie funkcji matematycznej:
 
 <br>
 
-<span style="font-size:22px;">
+<span style="font-size:26px;">
 
  $127 \left( 1 - e^{-x/20} \right)$
 
@@ -46,14 +46,14 @@ Do ustawiania prędkości silników wykorzystuję funkcję speedFormula, która 
 
 <br>
 
-<span style="font-size:22px;">**Tryb kolejki (queue)**
+<span style="font-size:26px;">**Tryb kolejki (queue)**
 
 Gdy program uruchamiany jest z argumentem queue, używana jest funkcja, która korzystając z poprzednich metod, kieruje silniki w stronę obiektu Point przekazanego do funkcji. Gdy silniki zbliżą się na odległość mniejszą niż ustawiony wcześniej procent błędu (errorPercent), punkt zostaje oznaczony jako osiągnięty, a funkcja przechodzi do kolejnych zadań.
 
 
 <br>
 
-<span style="font-size:22px;">**Tryb wywłaszczenia (preempt)**
+<span style="font-size:26px;">**Tryb wywłaszczenia (preempt)**
 
 Jeżeli program uruchomiony zostanie z argumentem preempt, silniki dążą do punktu currentPoint, który aktualizuje się w momencie pojawienia się nowego celu.
 
