@@ -8,12 +8,13 @@
 using namespace std;
 constexpr long double PI = 3.141592653589793238462643L;
 constexpr long double E = 2.718281828459045235360287L;
-double errorPercent = 0.2;
+double errorPercent = 1;
 
 class Points {
 public:
-    int x,y,z;
+    int x,y,z,directionX,directionY;
     bool done = false;
+
 
     Points(int x, int y, int z) {
         this->x = x;
@@ -22,25 +23,42 @@ public:
     }
 
     float angleX() const {
-        return atan2(y,x)/ (2*PI) * 4095;
+        float angle = ((atan2(y,x)/ (2*PI) * 4095)>0) ? atan2(y,x)/ (2*PI) * 4095 : 4095 + (atan2(y,x)/ (2*PI) * 4095);
+        return angle;
     }
 
     float angleY() const {
         float radius = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-        return acos(z/radius)/ (2*PI) * 4095;
+        float angle = (z == 0) ? 0 : abs(((acos(z/radius)) / PI * 4095 - 1024));
+        return angle;
     }
 
     void markDone(){
         done = true;
     }
+
+    void setDirectionX(int direction) {
+        this->directionX = direction;
+    }
+
+    void setDirectionY(int direction) {
+        this->directionY = direction;
+    }
 };
 
+int16_t difference(float encoder, float angle) {
+    // int16_t difference = abs(encoder - 4096 + angle) < abs(encoder - angle) ? encoder - 4096 + angle : encoder - angle;
+    this_thread::sleep_for(chrono::milliseconds(200));
+    int16_t difference = angle - encoder;       // raw difference
+    difference = (difference + 2048) % 4096 - 2048;
+    // cout << "DIFFERENCE:"<< difference << endl;
+    return difference;
+}
 
 int8_t speedFormula(float encoder, float angle) {
-    float difference = abs(encoder - angle);
-    float speed = 127 * (1 - pow(E,-difference/20));
-    int multiplier = (encoder < angle) ? 1 : -1;
-    return static_cast<int8_t>(speed * multiplier);
+    int16_t diff = difference(encoder, angle);
+    int8_t speed = 127 * (1 - pow(E,-abs(diff)/20));
+    return static_cast<int8_t>(speed);
 }
 
 
@@ -49,11 +67,16 @@ void setMotors(Points& p, uint16_t& encoder_value_X, uint16_t& encoder_value_Y,s
     auto motor2 = tester->get_motor_2();
     this_thread::sleep_for(chrono::milliseconds(10));
     cout << "Target: " << p.x << " " << p.y << " " << p.z << endl;
+    cout << "Angles: " << p.angleX() << " " << p.angleY() << endl;
 
-    while (abs(p.angleX() - encoder_value_X) > (4095 * errorPercent/ 100) || abs(p.angleY() - encoder_value_Y) > (4095 * errorPercent / 100)) {
-        motor1->send_data(speedFormula(encoder_value_X, p.angleX()));
-        motor2->send_data(speedFormula(encoder_value_Y, p.angleY()));
+    p.setDirectionX((difference(encoder_value_X,p.angleX()) > 0) ? 1 : -1);
+    p.setDirectionY((difference(encoder_value_Y,p.angleY()) > 0) ? 1 : -1);
+
+    while (abs(difference(encoder_value_X,p.angleX())) > (4095 * errorPercent/ 100) || abs(difference(encoder_value_Y,p.angleY())) > (4095 * errorPercent / 100)) {
+        motor1->send_data(speedFormula(encoder_value_X, p.angleX())*p.directionX);
+        motor2->send_data(speedFormula(encoder_value_Y, p.angleY())*p.directionY);
     }
+
     p.markDone();
     cout << "Reached: " << p.x << " " << p.y << " " << p.z << endl;
 }
@@ -109,7 +132,10 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
 
         while (!preempt){
             for (auto& p : points) {
-                if (!p.done) setMotors(p,encoder_value_X,encoder_value_Y,tester);
+                if (!p.done) {
+                    setMotors(p,encoder_value_X,encoder_value_Y,tester);
+
+                };
         }}
 
 
