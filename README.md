@@ -19,7 +19,7 @@ Aby współrzędne zgadzały sie z tymi, które używamy przy sterowaniu silniki
 
 <span style="font-size:22px;">**Klasa Points**
 
-Stworzyłem klasę Points, która pozwala na tworzenie obiektów reprezentujących punkty i zarządzanie nimi w programie. Klasa ta zawiera metody umożliwiające obliczenie wymaganych kątów do ustawienia silników w osiach X i Y.
+Stworzyłem klasę Points, która pozwala na tworzenie obiektów reprezentujących punkty i zarządzanie nimi w programie. Klasa ta zawiera metody umożliwiające obliczenie wymaganych kątów do ustawienia silników w osiach X i Y. W klasie przechowuje się również informacja o optymalnym kierunku obrotu osi X oraz Y, dzięki czemu informacja jest łatwo dostepna, w każdym miejscu programu.
 
 
 <br>
