@@ -47,11 +47,9 @@ public:
 };
 
 int16_t difference(float encoder, float angle) {
-    // int16_t difference = abs(encoder - 4096 + angle) < abs(encoder - angle) ? encoder - 4096 + angle : encoder - angle;
-    this_thread::sleep_for(chrono::milliseconds(200));
-    int16_t difference = angle - encoder;       // raw difference
+    int16_t difference = angle - encoder;
     difference = (difference + 2048) % 4096 - 2048;
-    // cout << "DIFFERENCE:"<< difference << endl;
+
     return difference;
 }
 
