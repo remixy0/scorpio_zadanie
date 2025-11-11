@@ -23,7 +23,7 @@ public:
     }
 
     float angleX() const {
-        float angle = (atan2(y,x)/ (2*PI) * 4095) > 0 ? (atan2(y,x)/ (2*PI) * 4095) : 4096 + (atan2(y,x)/ (2*PI) * 4095) ;
+        float angle = (atan2(y,x)/ (2*PI) * 4095) >= 0 ? (atan2(y,x)/ (2*PI) * 4095) : 4095 + (atan2(y,x)/ (2*PI) * 4095) ;
         return angle;
     }
 
