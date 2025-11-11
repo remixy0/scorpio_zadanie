@@ -14,7 +14,7 @@ Zacząłem od przekształcenia układu współrzędnych na układ sferyczny, pon
 
 <br>
 
-Aby współrzędne zgadzały sie z tymi, które używamy przy sterowaniu silnikiem, musiałem przeskalować kąty, ze wzgledu na wykorzytywanie nie pełnego obrotu w osi Y. W osi X, w zależności od tego, czy kąt jest dodatni, czy ujemny, ustawiam odpowiedni kąt. Np. dla kąta -1500 ustawiam kąt 2596  (bo 4096 + -1500).
+Aby współrzędne zgadzały sie z tymi, których używamy przy sterowaniu silnikiem, musiałem przeskalować kąty, ze wzgledu na wykorzytywanie niepełnego obrotu w osi Y. W osi X, w zależności od tego, czy kąt jest dodatni, czy ujemny, ustawiam odpowiedni kąt. Np. dla kąta -1500 ustawiam kąt 2596  (bo 4096 + -1500).
 
 
 <span style="font-size:26px;">**Klasa Points**
