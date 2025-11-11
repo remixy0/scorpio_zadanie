@@ -8,7 +8,7 @@
 using namespace std;
 constexpr long double PI = 3.141592653589793238462643L;
 constexpr long double E = 2.718281828459045235360287L;
-double errorPercent = 1;
+double errorPercent = 0.5;
 
 class Points {
 public:
@@ -55,7 +55,12 @@ public:
 
 int16_t difference(float encoder, float angle) {
     int16_t difference = angle - encoder;
-    difference = (difference + 2048) % 4096 - 2048;
+    difference = abs((difference + 2048) % 4096 - 2048);
+
+    if (encoder < angle) {
+        if (difference > 2048) difference = -difference;
+    }
+    else if (difference < 2048) difference = -difference;
 
     return difference;
 }
@@ -101,10 +106,13 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
     auto motor2 = tester->get_motor_2();
     auto commands = tester->get_commands();
 
-    commands->add_data_callback([&points, &current_point, &preempt,&didPrint](const Point& target) {
+    commands->add_data_callback([&points, &current_point, &preempt,&didPrint, &encoder_value_X, &encoder_value_Y](const Point& target) {
         points.emplace_back(target.x,target.y,target.z);
         current_point = Points(target.x,target.y,target.z);
+        current_point.setDirectionX((difference(encoder_value_X,current_point.angleX()) > 0) ? 1 : -1);
+        current_point.setDirectionY((difference(encoder_value_Y,current_point.angleY()) > 0) ? 1 : -1);
         didPrint = false;
+
         if (preempt) {
            cout << "changing target to: x=" << target.x
                 << " y=" << target.y
@@ -127,12 +135,12 @@ int solver(std::shared_ptr<backend_interface::Tester> tester, bool preempt) {
     });
 
         while (preempt){
-            if ((abs(current_point.angleX() - encoder_value_X) < (4095 * errorPercent / 100) && abs(current_point.angleY() - encoder_value_Y) < (4095 * errorPercent / 100)) && !didPrint) {
+            if ((abs(difference(encoder_value_X,current_point.angleX())) < (4095 * errorPercent / 100) && abs(difference(encoder_value_Y,current_point.angleY())) < (4095 * errorPercent / 100)) && !didPrint) {
                 cout << "Reached: " << current_point.x << " " << current_point.y << " " << current_point.z << endl;
                 didPrint = true;
             }
-            motor1->send_data(speedFormula(encoder_value_X, current_point.angleX()));
-            motor2->send_data(speedFormula(encoder_value_Y, current_point.angleY()));
+            motor1->send_data(speedFormula(encoder_value_X, current_point.angleX())*current_point.directionX);
+            motor2->send_data(speedFormula(encoder_value_Y, current_point.angleY())*current_point.directionY);
         }
 
         while (!preempt){
